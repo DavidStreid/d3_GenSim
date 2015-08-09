@@ -1,0 +1,246 @@
+<html>
+<head>
+    <!-- d3 -->
+    <script type="text/javascript" src="/d3/d3.min.js"></script>
+
+    <!-- DAT.GUI -->
+    <script type='text/javascript' src='/datGUI/DAT.GUI.min.js'></script>
+    
+    <!-- jQuery -->
+     <script type="text/javascript" src="/jquery/dist/jquery.js"></script>
+</head>
+
+<body>
+    <!-- Reading in the graph -->
+    <div id="container"></div>
+    <input type="file" name="filename" id="filename">
+    
+    
+    <script type="text/javascript">
+        window.onload = function()
+        {
+            $("#filename").change(function(evt)
+            {
+                // ext = extension; Required = .txt
+                var ext = $("input#filename").val().split(".").pop().toLowerCase();
+                var files = evt.target.files[0]; // FileList Object
+
+                // If there is a FileList Object present
+                if (files != undefined){
+                    var reader = new FileReader();
+
+                    // event is triggered each time the reading operation is completed
+                    reader.onload = function(e){
+                        var line = e.target.result.split("\n");
+                        var test = false
+                        
+                        return test
+                    }
+                }
+            }
+        )}
+        
+        svg_max = 10000 // Later set to max of the svg
+        
+        //Adding scaling factors
+        var scale = d3.scale.linear()
+            .domain([0,svg_max])
+            .range([0,100]);
+        
+        var jsonCircle = [
+            {"x_axis": 30, "y_axis": 30, "radius": 20, "color": "green"},
+            {"x_axis": 60, "y_axis": 40, "radius": 20, "color": "blue"},
+            {"x_axis": 90, "y_axis": 50, "radius": 20, "color": "red"}];
+        
+
+        var svgContainer = d3.select("body").append("svg")
+                            .attr("width", 200)
+                            .attr("height", 200);
+        
+        // Places all nodes inside svg group element <g></g>
+        var populationGroup = svgContainer.append("g");
+            // Can Add Transformations
+            //.attr("transform", "translate(80,0)");
+        
+//        var populations = populationGroup.selectAll("circle")
+//                        .data(jsonCircle)
+//                        .enter()
+//                        .append("circle");
+        
+        //Using functions to get json model data
+//        var populationAttributes = populations
+//                        .attr("cx", function (d) { return d.x_axis; })
+//                        .attr("cy", function (d) { return d.y_axis; })
+//                        .attr("r", function (d) {return d.radius;})
+//                        .style("fill", function (d) {return d.color;});
+        
+
+        
+        
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        // Associative Array to keep track of nodes
+        var population_list = new Array();
+        
+        var additions =  {
+            Nodes: "NODE ADDITIONS\n",
+            Edges: "EDGE ADDITIONS\n",
+            Migrations: "MIGRATION ADDITIONS\n",
+        }
+
+        var coordinates = {
+            Longitude: 20,
+            Latitude: 20,
+            Generation: 0,
+        };
+
+        var pop = {
+            name: "NodeX",
+            genValue: 0,
+            genOffset: 0,
+            genVariable: "generationVariable",
+            size: 20,
+            sizeOffset: 0,
+        }; 
+
+        var edge = {
+            startNode: "NodeX",
+            sNSize: 0,
+            endNode: "NodeY",
+            eNSize: 0,
+        };
+
+        var migrations = {
+            startingEdge: "startingEdge",
+            endingEdge: "endingEdge",
+            rateVariable: 0,
+        };
+
+        var obj = { 
+
+            AddEdge:function(){            
+                var sN = edge.startNode;
+                var eN = edge.endNode;
+                
+                console.log(population_list)
+                
+                x1 = population_list[sN].x_axis
+                x2 = population_list[eN].x_axis
+                y1 = population_list[sN].y_axis
+                y2 = population_list[eN].y_axis
+                
+                var edge_info = {"x1": x1, "x2": x2, "y1": y1, "y2": y2}
+                var edge_line = svgContainer.append("line")
+                    .attr("x1", x1)
+                    .attr("x2", x2)
+                    .attr("y1", y1)
+                    .attr("y2", y2)
+                    .attr("stroke-width", 2)
+                    .attr("stroke", "black")
+                
+                additions.Edges += sN + "to" + eN + " = edge(" + sN + ", " + eN + ")\n";
+            },
+
+            AddMigration:function(){
+                var sE = migrations.startingEdge;
+                var eE = migrations.endingEdge;
+                var rV = migrations.rateVariable;
+
+                additions.Migrations += "migration(" + sE + "," + eE + "," + rV + ")\n";
+            },  
+
+            AddNode:function(){
+                var x = coordinates.Longitude;
+                var y = coordinates.Latitude;
+                var z = coordinates.Generation;
+                var name = pop.name;
+                var genVal = pop.genValue;
+                var genOS = pop.genOffset;
+                var genVar = pop.genVariable;
+                var pS = pop.size;
+                var pSO = pop.sizeOffset;
+
+                var node_info = {"x_axis": x, "y_axis": y, "radius": pS, "color": "green"}
+                
+                var node = populationGroup.append("circle")
+                                .attr("cx", node_info.x_axis)
+                                .attr("cy", node_info.y_axis)
+                                .attr("r", node_info.radius)
+                                .style("fill", node_info.color);
+
+
+                population_list[name] = node_info
+                
+                additions.Nodes +=  genVar + " = gen(" + genVal + "," + genOS + ")\n" +
+                name + " = node(" + genVar + ")\n" +
+                "size" + name + " = size(" + pS + pSO + ")" + "\nLocation - Longitude: " + x + ", Latitude: " + y + ", Generation: " + z;
+            },
+
+            ExportAdditions: function(){
+                console.log(additions.Nodes+additions.Edges+additions.Migrations);
+            }
+        };
+
+        //DAT.GUI to add a Node
+        var gui = new dat.GUI();
+        var f2 = gui.addFolder('Population Coordinates');
+            f2.add(coordinates, 'Longitude');
+            f2.add(coordinates, 'Latitude');
+            f2.add(coordinates, 'Generation');
+            
+        var f3 = gui.addFolder('Population Parameters');
+            f3.add(pop, 'name');
+            f3.add(pop, 'genValue');
+            f3.add(pop, 'genOffset');
+            f3.add(pop, 'genVariable');
+            f3.add(pop, 'size');
+            f3.add(pop, 'sizeOffset');
+            
+        gui.add(obj,'AddNode');
+        var f4 = gui.addFolder('Edges');
+            f4.add(edge, 'startNode');
+            f4.add(edge, 'sNSize');
+            f4.add(edge, 'endNode');
+            f4.add(edge, 'eNSize');   
+
+        gui.add(obj,'AddEdge'); // Add is the name of a function in the variable, obj
+        var f5 = gui.addFolder('Migrations');
+            f5.add(migrations, 'startingEdge');
+            f5.add(migrations, 'endingEdge');
+            f5.add(migrations, 'rateVariable');
+            
+        gui.add(obj, 'AddMigration');
+        gui.add(obj, 'ExportAdditions');           
+    </script>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+</body>
+    
+</html>
