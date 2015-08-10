@@ -1,0 +1,36 @@
+body {
+  background-color: white;
+  color: black;
+}
+
+#filename { 
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+#main {
+    position: absolute;
+    left: 0px;
+    top: 1000px;	
+}
+
+#tooltip {
+    font-weight: bold;
+    position: absolute;
+    margin-top: 90px;
+    margin-left: 15px;
+    text-align: center;
+    color: black;
+}
+
+#tooltip.hidden {
+    display: none;
+}
+
+#tooltip p {
+    margin: 0;
+    font-family: sans-serif;
+    /*	font-size: 30px;*/
+    line-height: 20px;
+}
