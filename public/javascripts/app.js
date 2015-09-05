@@ -16,12 +16,11 @@ var Generation = function(varName, value, offset){
     count - number of nodes in that generation
     sizing_count - used for spacing
     */
-
     this.value = value
     this.offset = offset
     this.varName = varName
-    this.count = 1
-    this.sizing_count = 1
+    this.count = 0
+    this.sizing_count = 0
 };
 var Node = function(varName, gen, x, y, z){
     this.generation = gen
@@ -63,10 +62,14 @@ function parseEdge(varName, args){
     if (nodes[args[0]] === undefined){
         generations['g0'] = parseGen(args[0], [0, 0])
         nodes[args[0]] = new Node('g0', "g0", 450, 40, 0);
+        generations['g0'].count += 1
+        generations['g0'].sizing_count = generations['g0'].count
     }
     if (nodes[args[1]] === undefined){
         generations['g0'] = parseGen(args[0], [0, 0])
         nodes[args[1]] = new Node('g0', "g0", 400, 40, 0);
+        generations['g0'].count += 1
+        generations['g0'].sizing_count = generations[args].count
     }
 
     // Migration - migrationBranchEU = edge(nodeAA, nodeEuToAA, size(2000,2))
@@ -101,6 +104,7 @@ function parseNode(varName, args){
     // MAKING UP DATA - TODO - Add real data
     else {
         var g = "generation_value";
+        //Keeps track of the number of populations in each generation
         //Case where generation_variable already exists, count increases
         if (generations[args[0]]) {
             var g = generations[args[0]].varName
@@ -111,6 +115,8 @@ function parseNode(varName, args){
         if (!generations[args[0]]){
         // else{
             generations[args] = parseGen(args[0], [args[0], 0])
+            generations[args].count += 1
+            generations[args].sizing_count = generations[args].count
             var g = args[0]
         };
 
@@ -291,7 +297,7 @@ function graph(nodes, edges, generations){
         node_sections = generations[nodes[node].generation].count + 1;
         node_placement = generations[nodes[node].generation].sizing_count;
         nodes[node].xLoc = node_placement*(width*0.9)/node_sections
-
+        console.log(node + " " + (nodes[node].xLoc))
         var new_node = populationGroup.append("circle")
             // .attr("cx", nodes[node].xLoc)
             .attr("cx", nodes[node].xLoc)

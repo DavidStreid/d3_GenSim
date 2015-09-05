@@ -28,6 +28,8 @@ Migration(varName, start, end, adMixSize)
 PARSING FUNCTIONS
 parseSize - 
 
+ADDING NODES
+9/5 - it is assumed that a node that has not been added belongs to the most recent population, g0
 
 ADDING GENERATIONS
 G0 - Current (contemporary) generation
