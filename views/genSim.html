@@ -62,7 +62,6 @@
         edges = {}
         generations = {}
 
-        
         var additions =  {
             Nodes: "NODE ADDITIONS\n",
             Edges: "EDGE ADDITIONS\n",
@@ -92,24 +91,34 @@
             endingEdge: "endingEdge",
             rateVariable: 0,
         };
+
+        /*
+        GRAPH ADDITION FUNCTIONS
+            AddEdge - 
+            AddMigration - TODO
+            AddNode
+            ExportAdditions - Outputs additions to console
+        */
+
         var obj = { 
             AddEdge:function(){            
                 var sN = new_edge.startNode;
                 var eN = new_edge.endNode;
                 
-                // console.log(population_list)
-                
-                // x1 = population_list[sN].x_axis
-                // x2 = population_list[eN].x_axis
-                // y1 = population_list[sN].y_axis
-                // y2 = population_list[eN].y_axis
-
                 x1 = nodes[sN].xLoc
                 x2 = nodes[eN].xLoc
                 y1 = nodes[sN].yLoc
                 y2 = nodes[eN].yLoc
                 
-                var new_edge_info = {"x1": x1, "x2": x2, "y1": y1, "y2": y2}
+                // console.log(population_list)
+                // x1 = population_list[sN].x_axis
+                // x2 = population_list[eN].x_axis
+                // y1 = population_list[sN].y_axis
+                // y2 = population_list[eN].y_axis
+                
+                // var new_edge_info = {"x1": x1, "x2": x2, "y1": y1, "y2": y2}
+
+                // Adds edge to the svg 
                 var new_edge_line = svgContainer.append("line")
                     .attr("x1", x1)
                     .attr("x2", x2)
@@ -118,9 +127,10 @@
                     .attr("stroke-width", 2)
                     .attr("stroke", "black")
 
+                // Dictionary of tracked edges
                 edgeName = sN + " to " + eN
-
                 edges[edgeName] = new Edge(edgeName, nodes[sN], nodes[eN], new_edge.sNSize, new_edge.eNSize);  
+                // Text output
                 makeEdgeLabel(edges[edgeName]);
                 additions.Edges += sN + "to" + eN + " = edge(" + sN + ", " + eN + ")\n";
             },

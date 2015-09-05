@@ -4,42 +4,32 @@ $(function () {
   //alert("The Page Has Loaded!");
 }); 
 
-var GraphInfo = function(nodes, edges, generations)
-{
+// Initialize variables that keep track of graph objects
+var GraphInfo = function(nodes, edges, generations){
     this.nodes = nodes
     this.edges = edges
-    this.generations = generations
-}
-
-var Generation = function(varName, value, offset)
-{
+    this.generations = generations};
+var Generation = function(varName, value, offset){
     this.value = value
     this.offset = offset
-    this.varName = varName
-};
-var Node = function(varName, gen, x, y, z)
-{
+    this.varName = varName};
+var Node = function(varName, gen, x, y, z){
     this.generation = gen
     this.varName = varName
     this.xLoc = x
     this.yLoc = y
-    this.zLoc = z
-};
-var Edge = function(varName, start, end, start_size, end_size)
-{
+    this.zLoc = z};
+var Edge = function(varName, start, end, start_size, end_size){
     this.startnode = start
     this.endnode = end
     this.startsize = start_size
     this.endsize = end_size
-    this.varName = varName
-};
-
+    this.varName = varName};
 var Migration = function(varName, start, end, adMixSize){
     this.startnode = start;
     this.endnode = end;
     this.adMixSize = adMixSize;
-    this.varName = varName
-};
+    this.varName = varName};
 
 function parseSize(size_format){
     var start = size_format.indexOf("(") + 1;
@@ -52,20 +42,24 @@ function parseSize(size_format){
 
     size = size_format.substring(start,end);
     return size;
-}
+    };
 
 //parses Edge Object 
-function parseEdge(varName, args)
-{
-    // Check if nodes of edge exist. If not, add them 
+/*
+    
+*/
+function parseEdge(varName, args){
+    // Check if nodes of edge exist. If not, add them along with the generation they belong to
     if (nodes[args[0]] === undefined){
-        nodes[args[0]] = new Node(args[0], "G0", 450, 40, 0);
+        generations['g0'] = parseGen(args[0], [0, 0])
+        nodes[args[0]] = new Node('g0', "g0", 450, 40, 0);
     }
     if (nodes[args[1]] === undefined){
-        nodes[args[1]] = new Node(args[1], "G0", 400, 40, 0);
+        generations['g0'] = parseGen(args[0], [0, 0])
+        nodes[args[1]] = new Node('g0', "g0", 400, 40, 0);
     }
 
-    // Migration
+    // Migration - migrationBranchEU = edge(nodeAA, nodeEuToAA, size(2000,2))
     if (args.length === 3){
         var n1 = nodes[args[0]]
         var n2 = nodes[args[1]]
@@ -73,19 +67,20 @@ function parseEdge(varName, args)
         return new Migration(varName, n1, n2, adMixSize);  
     }
 
-    // Edge
+    // Edge - EuropeansPostAdmixture = edge(node(G0), nodeEuToAA, size(1000000), size(98000,1))
     if (args.length === 4){
         var n1 = nodes[args[0]]
         var n2 = nodes[args[1]]
         var s1 = parseFloat(parseSize(args[2]));
         var s2 = parseFloat(parseSize(args[3]));
         return new Edge(varName, n1, n2, s1, s2)       
-    }
-}
+    }}
 
-var node_xPos = 0;
-function parseNode(varName, args)
-{
+var last_gen = "";
+var node_yPos = 0;
+function parseNode(varName, args){
+    // num_of_generations = generations.length
+    // console.log(num_of_generations);
     if (args.length === 4)
     {
         var g = generations[args[0]]
@@ -97,12 +92,32 @@ function parseNode(varName, args)
 
     // MAKING UP DATA - TODO - Add real data
     else {
-        var g = generations[args[0]];
+
+        //Case where generation_variable in node initializaion is new
+
+        var g = "generation_value";
+        if (generations[args[0]]) {
+            var g = generations[args[0]].varName
+        };
+        if (!generations[args[0]]){
+        // else{
+            generations[args] = parseGen(args[0], [args[0], 0])
+            var g = args[0]
+        };
+
+        if (last_gen != g){
+            node_yPos += 150  
+            // node_xPos +=   
+        }
+
+        if (last_gen == g){
+            node_xPos = 
+        }
 
         // MAKING UP DATA
-        node_xPos += 150 
-        var x = node_xPos;
-        var y = ((node_xPos%300)/150) * 300 + 300;
+
+        var y = node_yPos;
+        var x = ((node_yPos%300)/150) * 300 + 300;
         var z = 20;
 
         // console.log("x: " + x + "; y: " + y + "; z: " + z);
@@ -110,8 +125,7 @@ function parseNode(varName, args)
     }
 }
 
-function parseGen(varName, args)
-{
+function parseGen(varName, args){
     return new Generation(varName, parseFloat(args[0]), parseFloat(args[1]));
 }
 
@@ -167,8 +181,7 @@ function checkParenthesesAndGetArguments(command){
     //for example, given edge(n1, n2, 100, 200) 
     //then args = [n1, n2, 100, 200]
 
-    return args
-}
+    return args}
 
 $(document).on("ready", function(){
     var file_stuff = ""
@@ -237,15 +250,13 @@ $(document).on("ready", function(){
 
         }
         // return false;
-    });
-});
+    });});
       
 function makeNodeLabel(node){
     var new_Node_label = labels.append("text").text(node.varName);
     new_Node_label.attr("y", node.yLoc)
                 .attr("x", node.xLoc)
-                .style("fill", "red");
-}
+                .style("fill", "red");}
 
 function makeEdgeLabel(edge){
     var startNode = edge.startnode
@@ -254,36 +265,48 @@ function makeEdgeLabel(edge){
     var new_Edge_label = labels.append("text").text(edge.varName);
     new_Edge_label.attr("y", (startNode.yLoc + endNode.yLoc)/2)
                 .attr("x", (startNode.xLoc + endNode.xLoc)/2)
-                .style("fill", "green");   
-}
+                .style("fill", "green");   }
 
+// Performs the graph function using pre-defined functions
 function graph(nodes, edges, generations){
     for (node in nodes){
-        var new_node = populationGroup.append("circle")
-                .attr("cx", nodes[node].xLoc)
-                .attr("cy", nodes[node].yLoc)
-                .attr("r", 20) // TODO - Change Size Parameters
-                .style("fill", "green")
+        gens = Object.keys(generations);
+        // console.log(gens)
+        for (g in gens){
+            /// Does each node one generation at a time
+            if (nodes[node].generation === gens[g]){
+                console.log(nodes[node].generation);
+                var new_node = populationGroup.append("circle")
+                        .attr("cx", nodes[node].xLoc)
+                        .attr("cy", nodes[node].yLoc)
+                        .attr("r", 20) // TODO - Change Size Parameters
+                        .style("fill", "green")
 
-                //Adding the mouseOver function - Hover to highlight
-                .on("mouseover", function(d) {
-                    var xPosition = parseFloat(d3.select(this).attr("cx"));
-                    var yPosition = parseFloat(d3.select(this).attr("cy"));
+                        //Adding the mouseOver function - Hover to highlight
+                        .on("mouseover", function(d) {
+                            var xPosition = parseFloat(d3.select(this).attr("cx"));
+                            var yPosition = parseFloat(d3.select(this).attr("cy"));
 
-                    d3.select("#tooltip")
-                        .style("left", xPosition + "px")
-                        .style("top", yPosition - 80+ "px")
-                        .select("#value")
-                        .text("population");
+                            d3.select("#tooltip")
+                                .style("left", xPosition + "px")
+                                .style("top", yPosition - 80+ "px")
+                                .select("#value")
+                                .text("population");
 
-                    d3.select("#tooltip").classed("hidden", false);
-                })
+                            d3.select("#tooltip").classed("hidden", false);
+                        })
 
-                .on("mouseout", function() {
-                    d3.select("#tooltip").classed("hidden", true);
-                })
-        additions.Nodes += nodes[node].varName + "; "
-        makeNodeLabel(nodes[node]);
+                        .on("mouseout", function() {
+                            d3.select("#tooltip").classed("hidden", true);
+                        })
+                additions.Nodes += nodes[node].varName + "; "
+                makeNodeLabel(nodes[node]);      
+            }
+        };
+
+        // console.log(typeof(generations.length));
+
+
     }
 
 
@@ -304,5 +327,4 @@ function graph(nodes, edges, generations){
 
         additions.Edges += startNode.varName + "to" + endNode.varName + " = edge(" + startNode.varName + ", " + endNode.varName  + ")\n";
         makeEdgeLabel(edges[edge])
-    }
-}
+    }}

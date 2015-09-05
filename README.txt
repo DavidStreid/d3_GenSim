@@ -27,3 +27,8 @@ Migration(varName, start, end, adMixSize)
 
 PARSING FUNCTIONS
 parseSize - 
+
+
+ADDING GENERATIONS
+G0 - Current (contemporary) generation
+*GENERATIONS SHOULD BE LISTED IN THE ORDER OF NEWEST TO OLDEST

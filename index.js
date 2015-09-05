@@ -24,8 +24,6 @@ app.get("/", function (req, res) {
   res.send(genSim_link);
 });
 
-
-
-app.listen(3000, function () {
+app.listen(2000, function () {
   console.log("Running");
 });
