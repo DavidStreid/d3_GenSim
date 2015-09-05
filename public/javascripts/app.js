@@ -5,14 +5,24 @@ $(function () {
 }); 
 
 // Initialize variables that keep track of graph objects
+// Gets initialized with a count of 1
 var GraphInfo = function(nodes, edges, generations){
     this.nodes = nodes
     this.edges = edges
-    this.generations = generations};
+    this.generations = generations
+    };
 var Generation = function(varName, value, offset){
+    /*
+    count - number of nodes in that generation
+    sizing_count - used for spacing
+    */
+
     this.value = value
     this.offset = offset
-    this.varName = varName};
+    this.varName = varName
+    this.count = 1
+    this.sizing_count = 1
+};
 var Node = function(varName, gen, x, y, z){
     this.generation = gen
     this.varName = varName
@@ -79,8 +89,6 @@ function parseEdge(varName, args){
 var last_gen = "";
 var node_yPos = 0;
 function parseNode(varName, args){
-    // num_of_generations = generations.length
-    // console.log(num_of_generations);
     if (args.length === 4)
     {
         var g = generations[args[0]]
@@ -92,13 +100,14 @@ function parseNode(varName, args){
 
     // MAKING UP DATA - TODO - Add real data
     else {
-
-        //Case where generation_variable in node initializaion is new
-
         var g = "generation_value";
+        //Case where generation_variable already exists, count increases
         if (generations[args[0]]) {
             var g = generations[args[0]].varName
+            generations[args[0]].count += 1
+            generations[args[0]].sizing_count = generations[args[0]].count
         };
+        //Case where generation_variable is new, the count is initialized at 1
         if (!generations[args[0]]){
         // else{
             generations[args] = parseGen(args[0], [args[0], 0])
@@ -106,12 +115,20 @@ function parseNode(varName, args){
         };
 
         if (last_gen != g){
-            node_yPos += 150  
+            last_gen = g;
+            node_yPos += 250  
+
+            var new_Node_label = labels.append("text").text(g);
+
+            console.log(g)
+            new_Node_label.attr("y", node_yPos+30)
+                .attr("x", 20)
+                .style("fill", "red");
             // node_xPos +=   
         }
 
-        if (last_gen == g){
-            node_xPos = 
+        if (last_gen === g){
+            // node_xPos = 
         }
 
         // MAKING UP DATA
@@ -254,7 +271,7 @@ $(document).on("ready", function(){
       
 function makeNodeLabel(node){
     var new_Node_label = labels.append("text").text(node.varName);
-    new_Node_label.attr("y", node.yLoc)
+    new_Node_label.attr("y", node.yLoc+15)
                 .attr("x", node.xLoc)
                 .style("fill", "red");}
 
@@ -265,48 +282,44 @@ function makeEdgeLabel(edge){
     var new_Edge_label = labels.append("text").text(edge.varName);
     new_Edge_label.attr("y", (startNode.yLoc + endNode.yLoc)/2)
                 .attr("x", (startNode.xLoc + endNode.xLoc)/2)
-                .style("fill", "green");   }
+                .style("fill", "blue")
+                .style("font-size", 9);   }
 
 // Performs the graph function using pre-defined functions
 function graph(nodes, edges, generations){
     for (node in nodes){
-        gens = Object.keys(generations);
-        // console.log(gens)
-        for (g in gens){
-            /// Does each node one generation at a time
-            if (nodes[node].generation === gens[g]){
-                console.log(nodes[node].generation);
-                var new_node = populationGroup.append("circle")
-                        .attr("cx", nodes[node].xLoc)
-                        .attr("cy", nodes[node].yLoc)
-                        .attr("r", 20) // TODO - Change Size Parameters
-                        .style("fill", "green")
+        node_sections = generations[nodes[node].generation].count + 1;
+        node_placement = generations[nodes[node].generation].sizing_count;
+        nodes[node].xLoc = node_placement*(width*0.9)/node_sections
 
-                        //Adding the mouseOver function - Hover to highlight
-                        .on("mouseover", function(d) {
-                            var xPosition = parseFloat(d3.select(this).attr("cx"));
-                            var yPosition = parseFloat(d3.select(this).attr("cy"));
+        var new_node = populationGroup.append("circle")
+            // .attr("cx", nodes[node].xLoc)
+            .attr("cx", nodes[node].xLoc)
+            .attr("cy", nodes[node].yLoc)
+            .attr("r", 20) // TODO - Change Size Parameters
+            .style("fill", "green")
 
-                            d3.select("#tooltip")
-                                .style("left", xPosition + "px")
-                                .style("top", yPosition - 80+ "px")
-                                .select("#value")
-                                .text("population");
+            //Adding the mouseOver function - Hover to highlight
+            .on("mouseover", function(d) {
+                var xPosition = parseFloat(d3.select(this).attr("cx"));
+                var yPosition = parseFloat(d3.select(this).attr("cy"));
 
-                            d3.select("#tooltip").classed("hidden", false);
-                        })
+                d3.select("#tooltip")
+                    .style("left", xPosition + "px")
+                    .style("top", yPosition - 80+ "px")
+                    .select("#value")
+                    .text("population");
 
-                        .on("mouseout", function() {
-                            d3.select("#tooltip").classed("hidden", true);
-                        })
-                additions.Nodes += nodes[node].varName + "; "
-                makeNodeLabel(nodes[node]);      
-            }
-        };
+                d3.select("#tooltip").classed("hidden", false);
+            })
+            .on("mouseout", function() {
+                d3.select("#tooltip").classed("hidden", true);
+            })
 
-        // console.log(typeof(generations.length));
-
-
+            // decrement the generation
+            generations[nodes[node].generation].sizing_count -= 1;
+        additions.Nodes += nodes[node].varName + "; "
+        makeNodeLabel(nodes[node]);      
     }
 
 
