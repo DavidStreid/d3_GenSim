@@ -1,5 +1,6 @@
 body {
-  background-color: white;
+  /*background-color: white;*/
+  background-image: "world_map.svg";
   color: black;
 }
 
@@ -8,6 +9,17 @@ body {
     left: 0px;
     top: 0px;
 }
+
+#view_selection { 
+    position: absolute;
+    top: 30px;
+}
+
+#gen_view{
+    position: absolute;
+    top: 50px;
+}
+
 
 #main {
     position: absolute;

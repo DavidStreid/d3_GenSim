@@ -1,31 +1,40 @@
-admixtureGeneration = gen(15,2); # this is the generation of the admixture event
-admixtureGenPlus1 = gen(admixtureGeneration,1);
+ag300 = gen(admixtureGeneration300,1);
+g0 = gen(g0,1);
+g200 = gen(200,1);
+g400 = gen(400,1);
+g500 = gen(500,1);
+g600 = gen(600,1);
 
-nodeEuToAA = node(admixtureGeneration);
-nodeAfToAA = node(admixtureGeneration);
-nodeAA = node(admixtureGeneration);
+nodeEuToAA = node(ag300, 47, -26, 98000);
+nodeAfToAA = node(ag300, 23, -28, 62000);
+nodeAA = node(g200, 39, -77, 1000000);
+nodeEU = node(g400, 55, 25, 1000000);
+nodeAf = node(g400, 7, 21, 1000000);
+nodeSplitAfEU = node(g500, 31, 23, 98000);
+nodeAncestralAll = node(g600, 50, 50, 98000);
+g0 = node(g0, 50, 10, 200000);
 
 sizeEuAtAdmixture = size(100000,1);
 sizeAfAtAdmixture = size(70000,1);
 ancestralSizeAA = size(10000,2);
 
-EuropeansPostAdmixture = edge(node(G0), nodeEuToAA, size(1000000), size(98000,1));
-AfricansPostAdmixture = edge(node(G0), nodeAfToAA, size(700000,1), size(62000,1));
-AfricanAmericans = edge(node(G0), nodeAA, size(1000000,2), ancestralSizeAA);
-migrationBranchEU = edge(nodeAA, nodeEuToAA, size(2000,2));
-migrationBranchAf = edge(nodeAA, nodeAfToAA, size(8000,2));
+EuropeansPostAdmixture = edge(nodeAA, nodeEuToAA, size(1000000), size(98000,1));
+AfricansPostAdmixture = edge(nodeAA, nodeAfToAA, size(700000,1), size(62000,1));
+AfricanAmericans = edge(g0, nodeAA, size(1000000,2), ancestralSizeAA);
+migrationBranchEU = edge(g0, nodeEU, size(2000,2));
+migrationBranchAf = edge(g0, nodeAf, size(8000,2));
+admixtureBranchAfAA = edge(nodeAf, nodeAfToAA, size(2000,2));
+admixtureBranchAfEU = edge(nodeEU, nodeEuToAA, size(2000,2));
 
-
-nodeSplitAfEU = node(gen(400,1));
 ancientBranchEU = edge(nodeEuToAA, nodeSplitAfEU, sizeEuAtAdmixture, size(50000,1));
 ancientBranchAf = edge(nodeAfToAA, nodeSplitAfEU, sizeAfAtAdmixture, size(50000,1));
+ancientBranchAf = edge(nodeSplitAfEU, nodeAf, ancestralSizeAA, size(50000,1));
+ancientBranchEU = edge(nodeSplitAfEU, nodeEU, ancestralSizeAA, size(50000,1));
+ancientBranch = edge(nodeAncestralAll, nodeSplitAfEU, ancestralSizeAA, size(50000,1));
 
-nodeAncestralAll = node(gen(600));
 ancestralSize = size(10000);
 edge(nodeSplitAfEU, nodeAncestralAll, size(100000,1), ancestralSize);
 edge(nodeAncestralAll, node(Ginf), ancestralSize);
-
-
 
 rateAf-AA=rate(0.001,1);
 

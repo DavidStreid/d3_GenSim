@@ -21,7 +21,7 @@ app.js
 ADMIXTURE PARAMETERS
 GraphInfo(nodes, edges, generations)
 Generation(varName, value, offset)
-Node(varName, gen, x, y, z)
+Node(varName, gen, x, y, z) <- added x,y,z 9/23/15
 Edge(varName, start, end, start_size, end_size)
 Migration(varName, start, end, adMixSize)
 

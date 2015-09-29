@@ -27,7 +27,13 @@
     <!-- Reading in the graph -->
     <div id="container"></div>
     <input type="file" name="filename" id="filename">
-    
+
+    <!-- Changing graph view between gen and pos view -->
+    <div id="change_view"></div>
+    <input type="text" name="view_selection" id="view_selection">
+
+    <button id="gen_view" onclick="graph(nodes, edges, generations)">Change to Gen</button>
+
     <script type="text/javascript" src="javascripts/app.js"></script>
 
     <script type="text/javascript">
@@ -35,6 +41,15 @@
         svg_max = 10000 // Later set to max of the svg
         width = 1000
         height = 800
+
+        var longScale = d3.scale.linear()
+            .domain([-180, 180])
+            .range([0, width])
+
+        var latScale = d3.scale.linear()
+            .domain([-90, 90])
+            .range([0, height])
+
         //Adding scaling factors
         var scale = d3.scale.linear()
             .domain([0,svg_max])
@@ -59,9 +74,9 @@
 
         var Graph = null
         var bool = 0
-        nodes = {}
-        edges = {}
-        generations = {}
+        var nodes = {}
+        var edges = {}
+        var generations = {}
 
         var additions =  {
             Nodes: "NODE ADDITIONS\n",
