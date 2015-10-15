@@ -456,6 +456,10 @@ function graphEdges(edges, mode){
         var startNode = edges[edge].startnode
         var endNode = edges[edge].endnode
 
+        // Add populations to the nodes
+        startNode.ancestor_relations.push(endNode)
+        endNode.descent_relations.push(startNode)
+
         var x1 = 0;
         var x2 = 0;
         var y1 = 0;

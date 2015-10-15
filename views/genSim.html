@@ -174,16 +174,75 @@
                                 .attr("r", node_info.radius)
                                 .style("fill", node_info.color);
                 nodes[name] = new Node(name, genVal, x, y, z);
-                makeNodeLabel(nodes[name]);
+                mode = "gen"
+
+                makeNodeLabel(nodes[name], mode);
                 
                 additions.Nodes +=  genVar + " = gen(" + genVal + "," + genOS + ")\n" +
                 name + " = node(" + genVar + ")\n" +
                 "size" + name + " = size(" + pS + pSO + ")" + "\nLocation - Longitude: " + x + ", Latitude: " + y + ", Generation: " + z;
             },
             ExportAdditions: function(){
-                console.log(additions.Nodes+additions.Edges+additions.Migrations);
+                Mich_input = ""
+                gens = Object.keys(generations)
+                gens.sort()
+                prev_pops = []
+                generation_lines = []
+                relation_lines = []
+
+                for (i=0; i<gens.length; i++){
+                    line = ""
+                    pops_at_gen = generations[gens[i]].populations
+                    
+                    line += getGenNum(gens[i]) + " "
+
+                    rel_line = ""
+
+                    if (prev_pops.length!=0) {
+                        relation = []
+                        for (j=0; j<pops_at_gen.length; j++){
+                            curr_node = nodes[pops_at_gen[j]]
+                            for (k=0; k<prev_pops.length; k++){
+                                descendent = prev_pops[k]
+                                if (curr_node.descent_relations.indexOf(descendent) > -1){
+                                    relation.push((k+1).toString() + "-" + (j+1).toString())
+                                }
+                            }
+                        }
+                        relation.sort()
+                        rel_line = relation.join(" ")
+                        relation_lines.push(rel_line)
+                    }
+                    prev_pops = []
+                    for (j=0; j<pops_at_gen.length; j++){
+                        curr_node = nodes[pops_at_gen[j]]
+                        line += curr_node.node_size + " "
+                        prev_pops.push(curr_node)           // In same order as line
+                    }
+
+                    generation_lines.push(line)
+                }
+                output = ""
+                output += generation_lines.shift()
+                while (generation_lines.length!=0){
+                    output+= '\n' + relation_lines.shift()
+                    output+= '\n' + generation_lines.shift()
+                }
+                console.log(output)
             }
         };
+
+        function getGenNum (gen_Name){
+            gen_Num = ""
+            if (gen_Name[0] == "a"){
+                gen_Num = gen_Name.substring(2,gen_Name.length)
+            }
+            else {
+                gen_Num = gen_Name.substring(1,gen_Name.length)
+            }
+            return gen_Num
+        }
+
         //DAT.GUI to add a Node
         var gui = new dat.GUI();
         var f2 = gui.addFolder('Population Coordinates');
