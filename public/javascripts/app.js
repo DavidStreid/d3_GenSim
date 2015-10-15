@@ -21,6 +21,8 @@ var Generation = function(varName, value, offset){
     this.varName = varName
     this.count = 0
     this.sizing_count = 0
+
+    this.populations = []
 };
 var Node = function(varName, gen, x, y, node_size, g_yAxis){
     this.generation = gen
@@ -30,7 +32,12 @@ var Node = function(varName, gen, x, y, node_size, g_yAxis){
     this.node_size = node_size
     this.gen_yAxis = g_yAxis
     this.gen_xAxis = 0
+
+    this.ancestor_relations = []
+    this.descent_relations = []
 };
+
+
 var Edge = function(varName, start, end, start_size, end_size){
     this.startnode = start
     this.endnode = end
@@ -432,6 +439,9 @@ function graphNodes(nodes, mode){
 
             // decrement the generation
             generations[nodes[node].generation].sizing_count -= 1;
+
+            // Add the population to the list of nodes
+            generations[nodes[node].generation].populations.push(node)
 
         additions.Nodes += nodes[node].varName + "; " 
         makeNodeLabel(nodes[node], mode);
