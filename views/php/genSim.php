@@ -36,40 +36,25 @@
 
     <script type="text/javascript" src="javascripts/app.js"></script>
 
-    <textarea id="UMich_Input">UMichigan Genome Simulator Input</textarea> 
-    <a download="info.txt" id="downloadlink" style="display: none">Download Input</a>
-
     <script type="text/javascript">
 
-    function createDownlaod(string) {
-        var textFile = null
-        // Given a string, it will creat a link.href object of that string
-        makeTextFile = function (text) {
-            var data = new Blob([text], {type: 'text/plain'});
-            // If we are replacing a previously generated file we need to
-            // manually revoke the object URL to avoid memory leaks.
-            if (textFile !== null) {
-              window.URL.revokeObjectURL(textFile);
-            }
-            textFile = window.URL.createObjectURL(data);
-            return textFile;
-        };
-        // Output downlaodable link to textfile
-        var link = document.getElementById('downloadlink');
-        link.href = makeTextFile(string);
-        link.style.display = 'block';
-        // Change textArea Input
-        document.getElementById('UMich_Input').innerHTML = string;
-    }
-
+    <?php
+        $myfile = fopen("newfile.txt", "w") or die("Unable to open file!");
+        $txt = "John Doe\n";
+        fwrite($myfile, $txt);
+        $txt = "Jane Doe\n";
+        fwrite($myfile, $txt);
+        fclose($myfile);
+    ?>
         
         svg_max = 10000 // Later set to max of the svg
         width = 1000
-        height = 1000
+        height = 800
 
         var longScale = d3.scale.linear()
             .domain([-180, 180])
             .range([0, width])
+
         var latScale = d3.scale.linear()
             .domain([-90, 90])
             .range([0, height])
@@ -213,11 +198,15 @@
                 prev_pops = []
                 generation_lines = []
                 relation_lines = []
+
                 for (i=0; i<gens.length; i++){
                     line = ""
                     pops_at_gen = generations[gens[i]].populations
+                    
                     line += getGenNum(gens[i]) + " "
+
                     rel_line = ""
+
                     if (prev_pops.length!=0) {
                         relation = []
                         for (j=0; j<pops_at_gen.length; j++){
@@ -248,7 +237,7 @@
                     output+= '\n' + relation_lines.shift()
                     output+= '\n' + generation_lines.shift()
                 }
-                createDownlaod(output)
+                console.log(output)
             }
         };
 

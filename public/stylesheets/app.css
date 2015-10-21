@@ -4,20 +4,32 @@ body {
   color: black;
 }
 
+#UMich_Input {
+    position: absolute;
+    left: 15%;
+    top: 5%;
+}
+
+#downloadlink{
+    position: absolute;
+    left: 15%;
+
+}
+
 #filename { 
     position: absolute;
-    left: 0px;
-    top: 0px;
+    left: 0%;
+    top: 0%;
 }
 
 #view_selection { 
     position: absolute;
-    top: 30px;
+    top: 5%;
 }
 
 #gen_view{
     position: absolute;
-    top: 50px;
+    top: 10%;
 }
 
 

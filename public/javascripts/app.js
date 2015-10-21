@@ -1,5 +1,3 @@
-
-
 $(function () {
   //alert("The Page Has Loaded!");
 }); 
@@ -105,12 +103,30 @@ var node_yPos = 0;
 
 /*
     E.g. varName = "nodeEuToAA"; args = ["admixtureGeneration"]
-
     gen_xAxis cannot be determined because number of nodes
     in generation is not yet determined at time of node parsing
 */
 
 function parseNode(varName, args){
+    // Find the maximum x and y values
+    if (typeof(parseNode.maxY) == 'undefined'){
+        parseNode.maxY = args[1]
+    }
+    else {
+        if (args[1] > parseNode.maxY){
+            parseNode.maxY = args[1]
+        }
+    }
+    if (typeof(parseNode.minY) == 'undefined'){
+        parseNode.minY = args[1]
+    }
+
+    else {
+        if (args[1] < parseNode.maxY){
+            parseNode.minY = args[1]
+        }
+    }
+
     if (args.length === 4)
     {
         var g = "generation_value";
@@ -130,7 +146,7 @@ function parseNode(varName, args){
 
         var g = generations[args[0]].varName
         var g_yAxis = parseInt(getGenNum(g));
-        var lat = height-latScale(args[1])
+        var lat = args[1] // height-latScale(args[1])
         var lon = longScale((args[2]))
         var size = args[3]/10000
         return new Node(varName, g, lon, lat, size, g_yAxis);
@@ -370,6 +386,10 @@ function graphGenerations(generations, mode){
     var yPos = 0
     var xPos = 0
 
+    var genScale = d3.scale.linear()
+        .domain([0,getMaxGen(generations)])
+        .range([0.05*height,0.95*height])
+
     if (typeof(generations) == 'string' && mode=='pos'){
         xPos = 100;
         yPos = 100;
@@ -381,7 +401,7 @@ function graphGenerations(generations, mode){
     else{
         for (gen in generations){
             if (mode == "gen"){
-            yPos = getGenNum(gen);
+            yPos = genScale(getGenNum(gen));
             var new_gen_label = labels.append("text").text(gen);
             new_gen_label.attr("y", yPos)
                         .attr("x", xPos)
@@ -391,10 +411,32 @@ function graphGenerations(generations, mode){
     }
 }
 
+function getMaxGen(generations){
+    gen_values = Object.keys(generations)
+    max_gen = 0
+    for (i=0; i<gen_values.length;i++){
+        gen_num = parseInt(gen_values[i].substr(1,gen_values[i].length))
+        if (gen_num > max_gen){
+            max_gen = gen_num
+        }
+    }
+    return max_gen
+}
+function setGen_yValues(nodes){
+    var genScale = d3.scale.linear()
+        .domain([0,getMaxGen(generations)])
+        .range([0.05*height,0.95*height])
+    for (node in nodes){
+        nodes[node].gen_yAxis = genScale(nodes[node].gen_yAxis);
+    }
+}
+
 function graphNodes(nodes, mode){
     var xPos = 0;
     var yPos = 0;
     var node_size = 0;
+
+    setGen_yValues(nodes) // Sets the y_values of the generational view so that they are proportional
 
     for (node in nodes){
         // determines generational x_placement based on number of nodes in each generation
@@ -410,7 +452,7 @@ function graphNodes(nodes, mode){
         }
         else if (mode == "pos"){
             xPos = nodes[node].xLoc;
-            yPos = nodes[node].yLoc;
+            yPos = latScale(nodes[node].yLoc);
             node_size = nodes[node].node_size;
         }
 
