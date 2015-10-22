@@ -1,12 +1,12 @@
-ag300 = gen(admixtureGeneration300,1);
+g300 = gen(admixtureGeneration300,1);
 g0 = gen(g0,1);
 g200 = gen(200,1);
 g400 = gen(400,1);
 g500 = gen(500,1);
 g600 = gen(600,1);
 
-nodeEuToAA = node(ag300, 47, -26, 98000);
-nodeAfToAA = node(ag300, 23, -28, 62000);
+nodeEuToAA = node(g300, 47, -26, 98000);
+nodeAfToAA = node(g300, 23, -28, 62000);
 nodeAA = node(g200, 39, -77, 1000000);
 nodeEU = node(g400, 55, 25, 1000000);
 nodeAf = node(g400, 7, 21, 1000000);
@@ -21,16 +21,14 @@ ancestralSizeAA = size(10000,2);
 EuropeansPostAdmixture = edge(nodeAA, nodeEuToAA, size(1000000), size(98000,1));
 AfricansPostAdmixture = edge(nodeAA, nodeAfToAA, size(700000,1), size(62000,1));
 AfricanAmericans = edge(g0, nodeAA, size(1000000,2), ancestralSizeAA);
-migrationBranchEU = edge(g0, nodeEU, size(2000,2));
-migrationBranchAf = edge(g0, nodeAf, size(8000,2));
-admixtureBranchAfAA = edge(nodeAf, nodeAfToAA, size(2000,2));
-admixtureBranchAfEU = edge(nodeEU, nodeEuToAA, size(2000,2));
+admixtureBranchAfAA = edge(nodeAfToAA, nodeAf, size(2000,2));
+admixtureBranchAfEU = edge(nodeEuToAA, nodeEU, size(2000,2));
 
-ancientBranchEU = edge(nodeEuToAA, nodeSplitAfEU, sizeEuAtAdmixture, size(50000,1));
-ancientBranchAf = edge(nodeAfToAA, nodeSplitAfEU, sizeAfAtAdmixture, size(50000,1));
-ancientBranchAf = edge(nodeSplitAfEU, nodeAf, ancestralSizeAA, size(50000,1));
-ancientBranchEU = edge(nodeSplitAfEU, nodeEU, ancestralSizeAA, size(50000,1));
-ancientBranch = edge(nodeAncestralAll, nodeSplitAfEU, ancestralSizeAA, size(50000,1));
+ancientBranchEU = edge(nodeEuToAA, nodeEU, sizeEuAtAdmixture, size(50000,1));
+ancientBranchAf = edge(nodeAfToAA, nodeAf, sizeAfAtAdmixture, size(50000,1));
+ancientBranchAf = edge(nodeAf, nodeSplitAfEU, ancestralSizeAA, size(50000,1));
+ancientBranchEU = edge(nodeEU, nodeSplitAfEU, ancestralSizeAA, size(50000,1));
+ancientBranch = edge(nodeSplitAfEU, nodeAncestralAll, ancestralSizeAA, size(50000,1));
 
 ancestralSize = size(10000);
 edge(nodeSplitAfEU, nodeAncestralAll, size(100000,1), ancestralSize);

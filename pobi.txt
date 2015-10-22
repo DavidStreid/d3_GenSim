@@ -46,3 +46,20 @@ split_yorkshire_england = node(g15,53,1,5000);
 split_Npembrokeshire_Spembrokeshire = node(g15,51.85,4.8,5000);
 split_pembrokeshire_wales = node(g95,51.5,4,5000);
 
+standardSize = size(100000,1);
+
+edge1 = edge(orkney2, split_orkney2_orkney1, standardSize, size(50000,1));
+edge2 = edge(orkney1, split_orkney2_orkney1, standardSize, size(50000,1));
+edge3 = edge(split_orkney2_orkney1, split_westray_orkney, standardSize, size(50000,1));
+edge4 = edge(westray, split_westray_orkney, standardSize, size(50000,1));
+
+edge5 = edge(northumbria, split_northumbria_cumbria, standardSize, size(50000,1));
+edge6 = edge(cumbria, split_northumbria_cumbria, standardSize, size(50000,1));
+
+edge7 = edge(N_ireland/S_scotland, split_ireland_scotland, standardSize, size(50000,1));
+edge8 = edge(N_ireland/W_scotland, split_ireland_scotland, standardSize, size(50000,1));
+edge9 = edge(split_ireland_scotland, split_NEscotland2_ireland, standardSize, size(50000,1));
+edge10 = edge(NE_scotland2, split_NEscotland2_ireland, standardSize, size(50000,1));
+edge11 = edge(split_NEscotland2_ireland, split_NEscotland1_ireland, standardSize, size(50000,1));
+
+

@@ -262,6 +262,18 @@ $(document).on("ready", function(){
 
     $("#filename").change(function(evt)
     {
+        // Clear the page
+        svgContainer.selectAll("circle").remove();
+        svgContainer.selectAll("line").remove();
+        svgContainer.selectAll("text").remove();
+        nodes = {}
+        edges = {}
+        generations = {}
+
+        // Reseting variables to track proportions
+        setGen_yValues.node_count = undefined
+
+
         var ext = $("input#filename").val().split(".").pop().toLowerCase();
         var files = evt.target.files; // FileList Object
         
@@ -422,13 +434,26 @@ function getMaxGen(generations){
     }
     return max_gen
 }
+
 function setGen_yValues(nodes){
-    var genScale = d3.scale.linear()
-        .domain([0,getMaxGen(generations)])
-        .range([0.05*height,0.95*height])
-    for (node in nodes){
-        nodes[node].gen_yAxis = genScale(nodes[node].gen_yAxis);
+    if (setGen_yValues.node_count === undefined){
+        var node_count = Object.keys(nodes).length
+
+        var genScale = d3.scale.linear()
+            .domain([0,getMaxGen(generations)])
+            .range([0.05*height,0.95*height])
+        for (node in nodes){
+            nodes[node].gen_yAxis = genScale(nodes[node].gen_yAxis);
+        }        
     }
+    setGen_yValues.node_count = Object.keys(nodes).length
+}
+
+function clear_generation_populations(generations){
+    gens = Object.keys(generations)
+    for (i=0; i<gens.length; i++){
+        generations[gens[i]].populations = []
+    }        
 }
 
 function graphNodes(nodes, mode){
@@ -437,6 +462,7 @@ function graphNodes(nodes, mode){
     var node_size = 0;
 
     setGen_yValues(nodes) // Sets the y_values of the generational view so that they are proportional
+    clear_generation_populations(generations) // Clear populations for output in exportAdditions
 
     for (node in nodes){
         // determines generational x_placement based on number of nodes in each generation
