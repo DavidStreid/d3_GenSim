@@ -146,7 +146,7 @@ function parseNode(varName, args){
 
         var g = generations[args[0]].varName
         var g_yAxis = parseInt(getGenNum(g));
-        var lat = args[1] // height-latScale(args[1])
+        var lat = latScale(args[1]) // height-latScale(args[1])
         var lon = longScale((args[2]))
         var size = args[3]/10000
         return new Node(varName, g, lon, lat, size, g_yAxis);
@@ -314,6 +314,9 @@ $(document).on("ready", function(){
                 }                
             }
         }
+
+        console.log(nodes)
+        console.log(selected_nodes)
         svgContainer.selectAll("circle").remove();
         svgContainer.selectAll("line").remove();
         svgContainer.selectAll("text").remove();
@@ -333,7 +336,7 @@ function makeNodeLabel(node, mode){
     }
     else if (mode == "pos"){
         x_position = node.xLoc;
-        y_position = node.yLoc;
+        y_position = (node.yLoc);
     }
     else {
         try {
@@ -477,8 +480,10 @@ function graphNodes(nodes, mode){
             node_size = 20;
         }
         else if (mode == "pos"){
+            console.log("xPos" + String(nodes[node].xLoc))
+            console.log("yPos" + String(latScale(nodes[node].yLoc)))
             xPos = nodes[node].xLoc;
-            yPos = latScale(nodes[node].yLoc);
+            yPos = (nodes[node].yLoc);
             node_size = nodes[node].node_size;
         }
 
@@ -505,11 +510,12 @@ function graphNodes(nodes, mode){
                 d3.select("#tooltip").classed("hidden", true);
             })
 
-            // decrement the generation
-            generations[nodes[node].generation].sizing_count -= 1;
-
-            // Add the population to the list of nodes
-            generations[nodes[node].generation].populations.push(node)
+            if (mode == "gen"){
+                // decrement the generation
+                generations[nodes[node].generation].sizing_count -= 1;
+                // Add the population to the list of nodes
+                generations[nodes[node].generation].populations.push(node)
+            }
 
         additions.Nodes += nodes[node].varName + "; " 
         makeNodeLabel(nodes[node], mode);
